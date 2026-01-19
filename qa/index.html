@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unit Converter + Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+
+        .container {
+            display: flex;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .converter, .calculator {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        input, select, button {
+            padding: 8px;
+            margin: 5px 0;
+            width: 180px;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 50px);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .calc-buttons button {
+            width: 50px;
+            height: 40px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Unit Converter + Calculator</h2>
+
+<div class="container">
+
+    <!-- CONVERTER -->
+    <div class="converter">
+        <h3>Unit Converter</h3>
+
+        <input type="number" id="input1" placeholder="Enter value" min="0">
+        <select id="unit1">
+            <optgroup label="Weight">
+                <option value="g">grams</option>
+                <option value="kg">kilograms</option>
+                <option value="centners">centners</option>
+                <option value="tons">tons</option>
+            </optgroup>
+            <optgroup label="Length">
+                <option value="mm">millimeters</option>
+                <option value="cm">centimeters</option>
+                <option value="dm">decimeters</option>
+                <option value="m">meters</option>
+                <option value="km">kilometers</option>
+                <option value="mi">miles</option>
+            </optgroup>
+            <optgroup label="Time">
+                <option value="ms">milliseconds</option>
+                <option value="s">seconds</option>
+                <option value="min">minutes</option>
+                <option value="h">hours</option>
+                <option value="d">days</option>
+                <option value="w">weeks</option>
+            </optgroup>
+        </select>
+
+        <br><br>
+
+        <input type="text" id="input2" disabled>
+        <select id="unit2">
+            <optgroup label="Weight">
+                <option value="g">grams</option>
+                <option value="kg">kilograms</option>
+                <option value="centners">centners</option>
+                <option value="tons">tons</option>
+            </optgroup>
+            <optgroup label="Length">
+                <option value="mm">millimeters</option>
+                <option value="cm">centimeters</option>
+                <option value="dm">decimeters</option>
+                <option value="m">meters</option>
+                <option value="km">kilometers</option>
+                <option value="mi">miles</option>
+            </optgroup>
+            <optgroup label="Time">
+                <option value="ms">milliseconds</option>
+                <option value="s">seconds</option>
+                <option value="min">minutes</option>
+                <option value="h">hours</option>
+                <option value="d">days</option>
+                <option value="w">weeks</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="calculator">
+        <h3>Calculator</h3>
+
+        <input type="text" id="calcDisplay" disabled>
+
+        <div class="calc-buttons">
+            <button onclick="press('7')">7</button>
+            <button onclick="press('8')">8</button>
+            <button onclick="press('9')">9</button>
+            <button onclick="press('/')">÷</button>
+
+            <button onclick="press('4')">4</button>
+            <button onclick="press('5')">5</button>
+            <button onclick="press('6')">6</button>
+            <button onclick="press('*')">×</button>
+
+            <button onclick="press('1')">1</button>
+            <button onclick="press('2')">2</button>
+            <button onclick="press('3')">3</button>
+            <button onclick="press('-')">−</button>
+
+            <button onclick="press('0')">0</button>
+            <button onclick="press('.')">.</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="press('+')">+</button>
+
+            <button onclick="clearCalc()" style="grid-column: span 4;">Clear</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const input1 = document.getElementById("input1");
+    const input2 = document.getElementById("input2");
+    const unit1 = document.getElementById("unit1");
+    const unit2 = document.getElementById("unit2");
+
+    const weightUnits = { g: 1, kg: 1000, centners: 100000, tons: 1000000 };
+    const lengthUnits = { mm: 0.001, cm: 0.01, dm: 0.1, m: 1, km: 1000, mi: 1609.34 };
+    const timeUnits = { ms: 0.001, s: 1, min: 60, h: 3600, d: 86400, w: 604800 };
+
+    input1.addEventListener("input", convert);
+    unit1.addEventListener("change", convert);
+    unit2.addEventListener("change", convert);
+
+    function convert() {
+        let value = parseFloat(input1.value);
+        if (isNaN(value) || value < 0) {
+            input2.value = "0.00";
+            return;
+        }
+
+        const u1 = unit1.value;
+        const u2 = unit2.value;
+
+        // Weight
+        if (weightUnits[u1] && weightUnits[u2]) {
+            input2.value = (value * weightUnits[u1] / weightUnits[u2]).toFixed(3);
+            return;
+        }
+
+        // Length
+        if (lengthUnits[u1] && lengthUnits[u2]) {
+            input2.value = (value * lengthUnits[u1] / lengthUnits[u2]).toFixed(3);
+            return;
+        }
+
+        // Time
+        if (timeUnits[u1] && timeUnits[u2]) {
+            input2.value = (value * timeUnits[u1] / timeUnits[u2]).toFixed(3);
+            return;
+        }
+
+        input2.value = "Invalid conversion";
+    }
+
+    // Calculator functions
+    function press(val) {
+        document.getElementById("calcDisplay").value += val;
+    }
+
+    function calculate() {
+        try {
+            document.getElementById("calcDisplay").value =
+                eval(document.getElementById("calcDisplay").value);
+        } catch {
+            document.getElementById("calcDisplay").value = "Error";
+        }
+    }
+
+    function clearCalc() {
+        document.getElementById("calcDisplay").value = "";
+    }
+</script>
+
+</body>
+</html>
